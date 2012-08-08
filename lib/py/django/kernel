@@ -1,0 +1,43 @@
+
+function django/startproject() {
+  local _p="${1}"
+
+  if empty "${_p}" ; then
+    msg "Empty project"
+    $failure
+  fi
+
+  msg "PWD: ${PWD}"
+  answer "Start new project ${_p}?"
+  if failed $? ; then
+    $failure
+  fi
+
+  ${django_admin} ${django_admin_opt} startproject "${_p}"
+}
+
+
+function django/runserver() {
+  local _p="${1}"
+  shift
+  local _arg="${*}"
+
+  if empty "${_p}" ; then
+    msg "Empty project"
+    $failure
+  fi
+
+  local _r="${_p}/${django_manage}"
+  if ! readable "${_r}" ; then
+    msg "Manager not found for ${_p}"
+    $failure
+  fi
+
+  msg "PWD: ${PWD}"
+  answer "Run project ${_p}?"
+  if failed $? ; then
+    $failure
+  fi
+
+  ${django_python} ${django_python_opt} ${_r} runserver ${_arg}
+}

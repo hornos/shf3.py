@@ -1,0 +1,2 @@
+py_env="virtualenv"
+py_env_rc=".${gbn}.$$"

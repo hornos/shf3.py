@@ -1,0 +1,37 @@
+#!/bin/bash
+source $(dirname ${BASH_SOURCE})/../../shf3/lib/header
+include $(dirname ${BASH_SOURCE})/../lib
+
+import gui
+import py/env
+
+function help/py() {
+  cat <<EOF
+Usage: ${gbn} command arg
+              -           - list virtual environments in CWD
+              login   env - login to virtual env
+              exit        - exists
+EOF
+  exit 1
+}
+
+### args
+_cmd=$1
+shift
+_arg=$*
+
+case "${_cmd}" in
+  help|-h)
+    help/py
+    ;;
+  login)
+    py/env/login ${_arg}
+    ;;
+  exit)
+    exit
+    ;;
+  *)
+    gui/header "Python virtual environments"
+    py/env/ls
+    ;;
+esac

@@ -1,0 +1,4 @@
+django_admin="django-admin-2.7.py"
+django_admin_opt="-v 2"
+django_manage="manage.py"
+django_python="python"

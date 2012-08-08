@@ -1,0 +1,45 @@
+
+function py/env/ls() {
+  local _a=""
+  local i
+  for i in $(ls -d */) ; do
+    _a="${i}bin/activate"
+    if ! readable "${_a}" ; then
+      continue
+    fi
+    cat "${_a}" | grep VIRTUAL &> /dev/null
+    if failed $? ; then
+      continue
+    fi
+    echo "${i%%/}"
+  done
+}
+
+function py/env/stop() {
+  if test -r "${py_env_rc}" ; then
+    rm -f "${py_env_rc}"
+  fi
+}
+
+function py/env/login() {
+  local _v=$*
+  _v=${_v%%/}
+  if empty "${_v}" ; then $failure ; fi
+
+  if ! test -d "${_v}" ; then
+    $failure
+  fi
+
+  answer "Login to ${_v}?"
+  if failed $? ; then
+    $failure
+  fi
+  trap py/env/stop INT TERM EXIT
+  cd "${_v}"
+  cat <<EOF > "${py_env_rc}"
+source bin/activate
+PS1="VIRTUAL[${_v}] \W (\$?)\\$ "
+alias install="easy_install"
+EOF
+  bash --noprofile --rcfile "${py_env_rc}"
+}

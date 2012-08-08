@@ -1,0 +1,41 @@
+#!/bin/bash
+source $(dirname ${BASH_SOURCE})/../../shf3/lib/header
+include $(dirname ${BASH_SOURCE})/../lib
+
+import django
+import gui
+
+function help/django() {
+  cat <<EOF
+Usage: ${gbn} command arg
+              proj    project
+              run     project
+EOF
+  exit 1
+}
+
+if test $# -lt 1 ; then
+  help/django
+fi
+
+_cmd=$1
+shift
+_arg=$*
+# command extensions
+case "${_cmd}" in
+  proj)
+    django/startproject ${_arg}
+  ;;
+
+  run)
+    django/runserver ${_arg}
+  ;;
+
+  help)
+    ${django_admin}
+  ;;
+
+  *)
+    ${django_admin} ${_cmd} $*
+  ;;
+esac
