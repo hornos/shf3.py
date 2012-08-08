@@ -1,1 +1,5 @@
 Shell stuff for Python development
+
+.bashrc:
+source $HOME/shf3.py/bin/shfrc
+
