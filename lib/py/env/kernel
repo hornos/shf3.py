@@ -11,7 +11,9 @@ function py/env/ls() {
     if failed $? ; then
       continue
     fi
-    echo "${i%%/}"
+    # echo "${i%%/}"
+    i="${i%%/}"
+    du -sh "${i}"
   done
 }
 
@@ -42,4 +44,58 @@ PS1="VIRTUAL[${_v}] \W (\$?)\\$ "
 alias install="easy_install"
 EOF
   bash --noprofile --rcfile "${py_env_rc}"
+}
+
+function py/env/create() {
+  local _v=$*
+  _v=${_v%%/}
+  if empty "${_v}" ; then $failure ; fi
+
+  if test -d "${_v}" ; then
+    $failure
+  fi
+
+  answer "Create ${_v}?"
+  if failed $? ; then
+    $failure
+  fi
+  ${py_env} ${_v}
+}
+
+function py/env/install() {
+  local _v=${1%%/}
+  shift
+  local _p=$*
+  if empty "${_v}" || empty "${_p}" ; then
+    $failure
+  fi
+
+  if ! test -d "${_v}" ; then
+    $failure
+  fi
+
+  answer "Install to ${_v}: ${_p}?"
+  if failed $? ; then
+    $failure
+  fi
+  ${py_env_pip} -E ${_v} install -U ${_p}
+}
+
+function py/env/source() {
+  local _v=${1%%/}
+  shift
+  local _p=$*
+  if empty "${_v}" || empty "${_p}" ; then
+    $failure
+  fi
+
+  if ! test -d "${_v}" ; then
+    $failure
+  fi
+
+  answer "Install to ${_v}: ${_p}?"
+  if failed $? ; then
+    $failure
+  fi
+  ${py_env_pip} -E ${_v} install -e ${_p}
 }

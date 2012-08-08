@@ -8,9 +8,15 @@ import py/env
 function help/py() {
   cat <<EOF
 Usage: ${gbn} command arg
-              -           - list virtual environments in CWD
-              login   env - login to virtual env
-              exit        - exists
+              -            - list virtual environments in CWD
+              login   env  - login to virtual env
+              exit         - exists
+              create  env  - create virtual env
+              install env pkgs - install packages with pip
+              source  env uri  - install package from uri
+
+http://www.clemesha.org/blog/modern-python-hacker-tools-virtualenv-fabric-pip/
+
 EOF
   exit 1
 }
@@ -26,6 +32,15 @@ case "${_cmd}" in
     ;;
   login)
     py/env/login ${_arg}
+    ;;
+  create)
+    py/env/create ${_arg}
+    ;;
+  install)
+    py/env/install ${_arg}
+    ;;
+  source)
+    py/env/source ${_arg}
     ;;
   exit)
     exit
