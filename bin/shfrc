@@ -2,3 +2,5 @@
 shf3_py_root=$(cd $(dirname "${BASH_SOURCE}");cd ..;pwd -P)
 
 PATH=${PATH}:${shf3_py_root}/bin
+
+alias pyin="py login"

@@ -99,3 +99,80 @@ function py/env/source() {
   fi
   ${py_env_pip} -E ${_v} install -e ${_p}
 }
+
+function py/env/pkgs() {
+  local _v=${1%%/}
+  if empty "${_v}" ; then
+    $failure
+  fi
+
+  local _yolk="${_v}/bin/yolk"
+  if ! test -x "${_yolk}" ; then
+    msg "Not found: ${_yolk}"
+    $failure
+  fi
+  ${_yolk} -l
+}
+
+function py/env/start() {
+  import sys/dir
+  local _env=${1%%/}
+  shift
+  local _s=$*
+  if empty "${_env}" || empty "${_s}" ; then
+    $failure
+  fi
+
+  if ! test -d "${_env}" ; then
+    $failure
+  fi
+
+  # nginx port
+  local _ngpo=$(u/split "${_s}" 1 ":")
+  if test "${_ngpo}" = "${_s}" ; then
+    _ngpo="8000"
+  fi
+
+  # gunicorn port
+  local _gupo=$(u/split "${_s}" 2 ":")
+  if test "${_gupo}" = "${_s}" ; then
+    _gupo="29000"
+  fi
+
+  # check for running nginx
+
+
+  answer "Start ngnix on ${_env}?"
+  if failed $? ; then $failure ; fi
+
+  local _pre="${_env}/${py_env_nginx_dir}"
+  sys/dir/mk "${_pre}"
+  sys/dir/mk "${_pre}/log"
+  local _pre=$(ns/path "${_pre}")
+
+  # TODO: hardcoded error_log
+  local _cfg="${_pre}/nginx.conf"
+  cat << EOF > "${_cfg}"
+
+pid ${_pre}/pid;
+error_log /dev/null crit;
+worker_processes  1;
+events {
+  worker_connections  128;
+}
+
+daemon off;
+http {
+server {
+  listen ${_ngpo};
+  server_name localhost;
+  error_log ${_pre}/log/error;
+  access_log ${_pre}/log/access;
+  location / {
+    proxy_pass http://127.0.0.1:${_gupo};
+  }
+}}
+EOF
+
+  ${py_env_nginx} -c "${_cfg}" -p "${_pre}"
+}

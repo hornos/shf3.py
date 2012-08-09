@@ -1,3 +1,6 @@
 py_env="virtualenv"
 py_env_pip="pip"
 py_env_rc=".${gbn}.$$"
+py_env_nginx_dir="nginx"
+py_env_nginx="nginx"
+py_env_pkgs="yolk"

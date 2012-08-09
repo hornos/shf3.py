@@ -8,15 +8,22 @@ import py/env
 function help/py() {
   cat <<EOF
 Usage: ${gbn} command arg
-              -            - list virtual environments in CWD
-              login   env  - login to virtual env
-              exit         - exists
-              create  env  - create virtual env
-              install env pkgs - install packages with pip
-              source  env uri  - install package from uri
+## Environment
+  list         - list virtual environments in CWD
+  login   env  - login to virtual env
+  exit         - exists
+  create  env  - create virtual env
+  install env pkgs  - install packages with pip
+  source  env uri   - install package from uri
+  pkgs    env  - list packages if yolk is installed
 
-http://www.clemesha.org/blog/modern-python-hacker-tools-virtualenv-fabric-pip/
+## TODO: Servers
+  start   env nginx[:port] - start nginx on env
+  stop    env nginx[:port] - stop nginx on env
 
+References
+http://www.clemesha.org/blog/modern-python-hacker-tools-virtualenv-fabric-pip
+http://brandonkonkle.com/blog/2010/jun/25/provisioning-new-ubuntu-server-django
 EOF
   exit 1
 }
@@ -27,26 +34,32 @@ shift
 _arg=$*
 
 case "${_cmd}" in
-  help|-h)
-    help/py
+  ls|list)
+    gui/header "Python virtual environments"
+    py/env/ls
     ;;
   login)
     py/env/login ${_arg}
     ;;
-  create)
+  mk|create)
     py/env/create ${_arg}
     ;;
-  install)
+  in|install)
     py/env/install ${_arg}
     ;;
-  source)
+  src|source)
     py/env/source ${_arg}
+    ;;
+  pkgs)
+    py/env/pkgs ${_arg}
+    ;;
+  start|stop)
+    py/env/${_cmd} ${_arg}
     ;;
   exit)
     exit
     ;;
-  *)
-    gui/header "Python virtual environments"
-    py/env/ls
+  help|-h|*)
+    help/py
     ;;
 esac
